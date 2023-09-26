@@ -1,11 +1,18 @@
 import { useState } from 'react'
 import "./style.css"
+import Persons from './components/Persons'
+import Filter from './components/Filter'
+import Form from './components/Form'
 
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'John doe' }
+    { name: 'John doe', number: '1234567890', id: 1 },
+    { name: 'Jane doe', number: '1234554321', id: 2 },
   ]) 
   const [newName, setNewName] = useState('')
+  const [newNumber , setNewNumber] = useState('')
+  const [search , setSearch] = useState('')
+  const [filteredPhonebook , setFilteredPhonebook] = useState([])
 
   const handleClick = e => {
     e.preventDefault()
@@ -15,26 +22,26 @@ const App = () => {
       alert(`${newName} is already added to the phonebook`)
       return
     }
-    const personToAdd = {name : newName}
+    const personToAdd = {name : newName, number: newNumber, id:persons.length + 1}
     setPersons([...persons, personToAdd])
     setNewName('')
+    setNewNumber('')
+  }
+
+  const handleSearch = e => {
+    const searchQuery = e.target.value
+    setSearch(searchQuery)
+    const filtered = persons.filter(person => person.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    setFilteredPhonebook(filtered)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form>
-        <div>
-          name: <input value={newName} onChange={e => setNewName(e.target.value)}/>
-        </div>
-        <div>
-          <button type="submit" onClick={handleClick}>add</button>
-        </div>
-      </form>
+      <Filter search={search} handleSearch={handleSearch} filteredPhonebook={filteredPhonebook} />
+      <Form newName={newName} setNewName={setNewName} newNUmber={newNumber} setNewNumber={setNewNumber} handleClick={handleClick}/>
       <h2>Numbers</h2>
-      {
-        persons.map(person => <p key={person.name}>{person.name}</p> )
-      }
+      <Persons phonebook={persons} />
     </div>
   )
 }
